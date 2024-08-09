@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <title>bar graph of the life span of dogs</title>
+</head>
+
+<body>
+    <div id="myPlot" style="width:100%;max-width:700px;margin-left: auto;margin-right: auto;"></div>
+
+    <script>
+        const headers = new Headers({
+            "Content-Type": "application/json",
+            "x-api-key": "live_P7TX9x2Xi5VVEkIRzwkONnXdlo0BIfSvYcvZcVOnTpYsmejR89SJvCXWiLmumTF1"
+        });
+
+        var requestOptions = {
+            method: 'GET',
+            headers: headers,
+            redirect: 'follow'
+        };
+
+        fetch("https://api.thedogapi.com/v1/images/search?size=med&mime_types=jpg&format=json&has_breeds=true&order=RANDOM&page=0&limit=10", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                let answer = JSON.parse(result);
+
+                let xArray = [];
+                let yArray = [];
+
+                for (let index in answer) {
+                    yArray.push(parseInt(answer[index].breeds[0]["life_span"]));
+                    xArray.push(answer[index].breeds[0].name);
+                }
+
+
+                let data = [{
+                    x: xArray,
+                    y: yArray,
+                    type: "bar",
+                    orientation: "v",
+                    marker: { color: "rgba(0,0,255,0.6)" }
+                }];
+
+                const layout = { title: "Life span of the different dog breeds" };
+
+                Plotly.newPlot("myPlot", data, layout);
+
+            })
+            .catch(error => console.log('error', error));
+
+
+    </script>
+</body>
+
+</html>
